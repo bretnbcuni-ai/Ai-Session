@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Session Survey // State of AI 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --border: #2a2a2a;
+            --accent: #e8ff47;
+            --text: #f0f0f0;
+            --muted: #666;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 5rem 2rem;
+            margin: 0;
+        }
+
+        .container { max-width: 700px; width: 100%; }
+
+        header {
+            border-left: 3px solid var(--accent);
+            padding-left: 2rem;
+            margin-bottom: 5rem;
+        }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3.5rem;
+            line-height: 0.9;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 1rem;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            font-size: 1rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 4rem;
+            max-width: 600px;
+        }
+
+        .q-row { margin-bottom: 4rem; }
+
+        .label-meta {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        label {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 1.25rem;
+            line-height: 1.3;
+        }
+
+        .option-list { display: grid; gap: 0.5rem; }
+
+        .option-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .option-box:hover { border-color: var(--muted); }
+
+        input[type="radio"] { accent-color: var(--accent); transform: scale(1.1); }
+
+        textarea {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            min-height: 120px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 1.5rem;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 2rem;
+        }
+
+        button:hover { opacity: 0.85; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Before<br>We Begin</h1>
+            <div class="subtitle">Pre-Session Survey // State of AI 2026</div>
+        </header>
+
+        <p class="intro">This quick survey lets me know what you actually want to hear about — so we can skip the stuff you don't and go deeper on the stuff you do.</p>
+
+        <form name="ai-pre-session-survey" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="ai-pre-session-survey">
+
+            <div class="q-row">
+                <span class="label-meta">01 // Experience Level</span>
+                <label>How would you describe your current experience with AI tools?</label>
+                <div class="option-list">
+                    <label class="option-box"><input type="radio" name="q1" value="novice"> Novice — I've used ChatGPT a handful of times, but that's about it.</label>
+                    <label class="option-box"><input type="radio" name="q1" value="casual"> Casual — I use AI tools here and there but haven't built them into my workflow.</label>
+                    <label class="option-box"><input type="radio" name="q1" value="intermediate"> Intermediate — I regularly use AI for ideation, copy, or image generation.</label>
+                    <label class="option-box"><input type="radio" name="q1" value="advanced"> Advanced — I'm deep in it — ComfyUI, custom workflows, prompt engineering, the works.</label>
+                </div>
+            </div>
+
+            <div class="q-row">
+                <span class="label-meta">02 // Depth</span>
+                <label>What kind of session are you looking for?</label>
+                <div class="option-list">
+                    <label class="option-box"><input type="radio" name="q2" value="high-level"> High-level overview — show me the landscape and where things are headed.</label>
+                    <label class="option-box"><input type="radio" name="q2" value="deep-dive"> Deep dive — pick a few tools and really show me how they work.</label>
+                    <label class="option-box"><input type="radio" name="q2" value="mix"> A mix of both — start broad, then zoom into a couple key areas.</label>
+                </div>
+            </div>
+
+            <div class="q-row">
+                <span class="label-meta">03 // Tool Focus</span>
+                <label>Would you rather hear about tools available at work, or a broader look at what's out there?</label>
+                <div class="option-list">
+                    <label class="option-box"><input type="radio" name="q3" value="work-tools"> Work tools — focus on what we actually have access to and can use on projects.</label>
+                    <label class="option-box"><input type="radio" name="q3" value="general-tools"> General tools — show me the full landscape, even stuff I'd use on my own time.</label>
+                    <label class="option-box"><input type="radio" name="q3" value="both"> Both — start with what's available at work, then show me what else is worth knowing.</label>
+                </div>
+            </div>
+
+            <div class="q-row">
+                <span class="label-meta">04 // Interest Area</span>
+                <label>Which area of AI are you most curious about right now?</label>
+                <div class="option-list">
+                    <label class="option-box"><input type="radio" name="q4" value="image-gen"> Image generation — Midjourney, DALL·E, Firefly, Flux, etc.</label>
+                    <label class="option-box"><input type="radio" name="q4" value="video-motion"> Video &amp; motion — Sora, Runway, Kling, Veo, etc.</label>
+                    <label class="option-box"><input type="radio" name="q4" value="text-llm"> Text &amp; LLMs — ChatGPT, Claude, Gemini for writing, strategy, and ideation.</label>
+                    <label class="option-box"><input type="radio" name="q4" value="design-workflows"> Design workflows — AI inside Figma, Photoshop, and other everyday tools.</label>
+                    <label class="option-box"><input type="radio" name="q4" value="big-picture"> The big picture — how AI is changing the creative industry overall.</label>
+                </div>
+            </div>
+
+            <div class="q-row">
+                <span class="label-meta">05 // Biggest Barrier</span>
+                <label>What's the main thing holding you back from using AI more in your work?</label>
+                <div class="option-list">
+                    <label class="option-box"><input type="radio" name="q5" value="dont-know-where"> I don't know where to start — there are too many tools and options.</label>
+                    <label class="option-box"><input type="radio" name="q5" value="quality-concerns"> Quality concerns — the output isn't good enough to use in real projects yet.</label>
+                    <label class="option-box"><input type="radio" name="q5" value="ethical-legal"> Ethical and legal questions — copyright, ownership, client expectations.</label>
+                    <label class="option-box"><input type="radio" name="q5" value="no-time"> No time — I'm interested but haven't had space to experiment.</label>
+                    <label class="option-box"><input type="radio" name="q5" value="already-using"> Nothing — I'm already using it and just want to level up.</label>
+                </div>
+            </div>
+
+            <div class="q-row">
+                <span class="label-meta">06 // Open Floor</span>
+                <label>Anything specific you want covered? Topics, tools, questions, hot takes — all fair game.</label>
+                <textarea name="open_suggestions" placeholder="What would make this session actually useful to you? Don't hold back."></textarea>
+            </div>
+
+            <button type="submit">Submit Survey</button>
+        </form>
+    </div>
+
+</body>
+</html>
