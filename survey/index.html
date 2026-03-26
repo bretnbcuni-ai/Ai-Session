@@ -136,8 +136,15 @@
 
         <p class="intro">This quick survey lets me know what you actually want to hear about — so we can skip the stuff you don't and go deeper on the stuff you do.</p>
 
-        <form name="ai-pre-session-survey" method="POST" data-netlify="true" action="/survey/success.html">
-            <input type="hidden" name="form-name" value="ai-pre-session-survey">
+        <form action="https://api.web3forms.com/submit" method="POST">
+
+            <input type="hidden" name="access_key" value="f4841508-655d-4d80-8dd1-1618e4ed9bfe">
+
+            <input type="hidden" name="redirect" value="https://bretnbcuni-ai.github.io/Ai-Session/survey/success.html">
+
+            <input type="hidden" name="subject" value="New AI 2026 Survey Submission">
+
+            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
 
             <div class="q-row">
                 <span class="label-meta">01 // Experience Level</span>
