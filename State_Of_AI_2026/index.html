@@ -1,0 +1,2348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI: State of the Union — 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #e8ff47;
+    --accent2: #ff6b35;
+    --blue: #7eb8f7;
+    --purple: #c084fc;
+    --green: #34d399;
+    --red: #fb7185;
+    --text: #f0f0f0;
+    --muted: #999;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV DOTS */
+  .nav-dots {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 100;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .nav-dot:hover::after {
+    content: attr(title);
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+  .nav-dot.active { background: var(--accent); transform: scale(1.5); }
+
+  /* SECTIONS */
+  section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 6rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.95;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 640px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .accent-text  { color: var(--accent); }
+  .accent2-text { color: var(--accent2); }
+  .blue-text    { color: var(--blue); }
+
+  /* HERO */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 40px, #fff 40px, #fff 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, #fff 40px, #fff 41px);
+  }
+
+  .big-label {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .scroll-hint::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: var(--muted);
+    animation: scrollLine 2s infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(0.5); }
+  }
+
+  /* ================================
+     TIMELINE
+  ================================ */
+  .s1-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 0;
+  }
+  .s1-header .section-number { margin-bottom: 1rem; }
+  .s1-header h2 { margin-bottom: 0; }
+
+  .scatter-timeline {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  .scatter-line {
+    position: absolute;
+    top: 55%;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .scatter-event {
+    position: absolute;
+    top: 55%;
+    width: 0;
+    transform: translateX(-50%);
+  }
+
+  .scatter-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    top: -4px; left: -4px;
+    z-index: 2;
+    transition: background 400ms ease, box-shadow 400ms ease;
+  }
+
+  .scatter-connector {
+    position: absolute;
+    width: 1px;
+    left: 0;
+    transform: translateX(-50%);
+    height: 24px;
+    background: transparent;
+    transition: background 400ms ease;
+  }
+
+  .scatter-year {
+    position: absolute;
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 3.5vw, 4.5rem);
+    line-height: 1.05;
+    color: var(--border);
+    opacity: 0.3;
+    text-align: center;
+    left: 0;
+    transform: translateX(-50%);
+    transition: color 400ms ease, opacity 400ms ease;
+    white-space: nowrap;
+  }
+
+  .scatter-title {
+    position: absolute;
+    font-size: 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    max-width: 140px;
+    text-align: center;
+    opacity: 0.2;
+    color: var(--text);
+    line-height: 1.3;
+    left: 0;
+    transform: translateX(-50%);
+    transition: opacity 400ms ease;
+  }
+
+  .scatter-event.above .scatter-connector { bottom: 4px; }
+  .scatter-event.above .scatter-year      { bottom: 32px; }
+  .scatter-event.above .scatter-title     { top: 14px; }
+
+  .scatter-event.below .scatter-connector { top: 4px; }
+  .scatter-event.below .scatter-year      { top: 32px; }
+  .scatter-event.below .scatter-title     { bottom: 14px; }
+
+  .scatter-event.active .scatter-dot {
+    background: var(--accent);
+    animation: dotPulse 1.4s ease-in-out infinite;
+  }
+  .scatter-event.active .scatter-year      { color: var(--accent); opacity: 1; }
+  .scatter-event.active .scatter-title     { opacity: 1; }
+  .scatter-event.active .scatter-connector { background: var(--accent); opacity: 0.5; }
+
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,255,71,0.4); }
+    50%       { box-shadow: 0 0 0 8px rgba(232,255,71,0); }
+  }
+
+  /* ================================
+     LANDSCAPE TABLE
+  ================================ */
+  .landscape-table {
+    margin-top: 3rem;
+    width: 100%;
+    max-width: 900px;
+    border-collapse: collapse;
+  }
+
+  .landscape-table th {
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .landscape-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    vertical-align: middle;
+  }
+
+  .landscape-table tr:hover td { background: var(--surface2); }
+
+  .landscape-table td:first-child {
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .landscape-table td:nth-child(2) { font-weight: 700; }
+
+  .model-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  .model-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    color: var(--muted);
+  }
+
+  .model-tag.openai    { border-color: rgba(16,163,127,0.4);   color: #10a37f; }
+  .model-tag.google    { border-color: rgba(126,184,247,0.4);  color: var(--blue); }
+  .model-tag.adobe     { border-color: rgba(255,107,53,0.4);   color: var(--accent2); }
+  .model-tag.xai       { border-color: rgba(192,132,252,0.4);  color: var(--purple); }
+  .model-tag.anthropic { border-color: rgba(52,211,153,0.4);   color: var(--green); }
+
+  /* ================================
+     PLATFORM CARDS (2×2 grid)
+  ================================ */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-top: 2rem;
+    max-width: 900px;
+    align-items: start;
+  }
+
+  .platform-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .platform-card:hover { border-color: var(--accent); }
+
+  .platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 8px;
+  }
+
+  .platform-card.openai::before    { background: #10a37f; }
+  .platform-card.google::before    { background: var(--blue); }
+  .platform-card.xai::before       { background: var(--purple); }
+  .platform-card.anthropic::before { background: var(--green); }
+
+  .platform-parent {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  .platform-card.openai    .platform-parent { color: #10a37f; }
+  .platform-card.google    .platform-parent { color: var(--blue); }
+  .platform-card.xai       .platform-parent { color: var(--purple); }
+  .platform-card.anthropic .platform-parent { color: var(--green); }
+
+  .platform-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+
+  .sw-cols {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .sw-col h4 {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .sw-col.strengths h4  { color: var(--green); }
+  .sw-col.weaknesses h4 { color: var(--purple); }
+
+  .sw-col ul { list-style: none; }
+
+  .sw-col ul li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 0.3rem 0 0.3rem 1.25em;
+    text-indent: -1.25em;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .sw-col ul li:last-child { border-bottom: none; }
+
+  .sw-col ul li::before {
+    content: '— ';
+    color: var(--border);
+  }
+
+  /* ================================
+     TOOL CARDS (Image / Video)
+  ================================ */
+  .tool-section-intro {
+    margin-bottom: 0;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    max-width: 1000px;
+  }
+
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.25rem 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .tool-card:hover { border-color: var(--muted); }
+
+  .tool-maker {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .tool-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 0.35rem;
+    line-height: 1;
+  }
+
+  .tool-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-bottom: 0.4rem;
+    font-weight: 400;
+  }
+
+  .tool-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tool-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid;
+  }
+
+  .tool-tag.web  { color: var(--blue);    border-color: rgba(126,184,247,0.35); background: rgba(126,184,247,0.06); }
+  .tool-tag.free { color: var(--green);   border-color: rgba(52,211,153,0.35);  background: rgba(52,211,153,0.06); }
+  .tool-tag.open { color: var(--accent);  border-color: rgba(232,255,71,0.35);  background: rgba(232,255,71,0.06); }
+  .tool-tag.cc   { color: var(--accent2); border-color: rgba(255,107,53,0.35);  background: rgba(255,107,53,0.06); }
+
+  /* Tool card company color bars */
+  .tool-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 8px;
+  }
+
+  /* Unified top bar — all tool cards */
+  .tool-card::before { background: var(--border); }
+  .tool-card .tool-maker { color: var(--muted); }
+
+  /* Company colors — tool cards (s5/s6) */
+  .tool-card.adobe::before       { background: #ff6b35; }
+  .tool-card.adobe .tool-maker   { color: #ff6b35; }
+
+  .tool-card.midjourney::before      { background: #7c6fff; }
+  .tool-card.midjourney .tool-maker  { color: #7c6fff; }
+
+  .tool-card.openai-t::before      { background: #10a37f; }
+  .tool-card.openai-t .tool-maker  { color: #10a37f; }
+
+  .tool-card.google-t::before      { background: #7eb8f7; }
+  .tool-card.google-t .tool-maker  { color: #7eb8f7; }
+
+  .tool-card.bfl::before      { background: #94a3b8; }
+  .tool-card.bfl .tool-maker  { color: #94a3b8; }
+
+  .tool-card.stability::before      { background: #d946ef; }
+  .tool-card.stability .tool-maker  { color: #d946ef; }
+
+  .tool-card.runway-t::before      { background: #2dd4bf; }
+  .tool-card.runway-t .tool-maker  { color: #2dd4bf; }
+
+  .tool-card.kuaishou::before      { background: #fb7185; }
+  .tool-card.kuaishou .tool-maker  { color: #fb7185; }
+
+  .tool-card.bytedance::before      { background: #60a5fa; }
+  .tool-card.bytedance .tool-maker  { color: #60a5fa; }
+
+  .tool-card.alibaba::before      { background: #f59e0b; }
+  .tool-card.alibaba .tool-maker  { color: #f59e0b; }
+
+  /* Clickable cards */
+  .tool-card[data-clickable], .platform-card[data-clickable] { cursor: pointer; }
+
+  /* Tool card S/W (compact) */
+  .tool-sw {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .tool-sw-col h5 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+
+  .tool-sw-col.strengths h5  { color: var(--green); }
+  .tool-sw-col.weaknesses h5 { color: var(--purple); }
+  .tool-sw-col ul { list-style: none; }
+
+  .tool-sw-col ul li {
+    font-size: 0.7rem;
+    color: var(--muted);
+    padding: 0.1rem 0 0.1rem 1em;
+    text-indent: -1em;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .tool-sw-col ul li::before { content: '— '; color: var(--border); }
+
+  /* Platform card tags */
+  .platform-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ================================
+     DETAIL PANEL
+  ================================ */
+  .detail-panel {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: 3rem 6rem 4rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    overflow-y: auto;
+    --detail-color: var(--accent);
+  }
+
+  .detail-panel::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--detail-color);
+    transition: background 0.25s;
+    z-index: 201;
+  }
+
+  .detail-panel.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+
+  .detail-back {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    align-self: flex-start;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .detail-back:hover { color: var(--detail-color); border-color: var(--detail-color); }
+
+  .detail-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    flex: 1;
+    align-items: start;
+  }
+
+  .detail-left { display: flex; flex-direction: column; }
+
+  .detail-maker {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .detail-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.34rem, 4.69vw, 4.22rem);
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .detail-desc {
+    font-size: 1.2rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 480px;
+    font-weight: 400;
+  }
+
+  .detail-sw { display: flex; flex-direction: column; gap: 1rem; }
+
+  .detail-sw-col h4 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-sw-col.strengths h4  { color: var(--green); }
+  .detail-sw-col.weaknesses h4 { color: var(--purple); }
+  .detail-sw-col ul { list-style: none; }
+
+  .detail-sw-col ul li {
+    font-size: 1.125rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 0.35rem 0 0.35rem 1.25em;
+    text-indent: -1.25em;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  .detail-sw-col ul li:last-child { border-bottom: none; }
+  .detail-sw-col ul li::before { content: '— '; color: var(--border); }
+
+  .detail-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 1.5rem; }
+
+  .detail-right { display: flex; flex-direction: column; }
+
+  .detail-image-placeholder {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--bg);
+    aspect-ratio: 1 / 1;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+
+  .dip-icon { font-size: 2rem; color: var(--border); line-height: 1; }
+
+  @media (max-width: 768px) {
+    .detail-body { grid-template-columns: 1fr; }
+    .detail-panel { padding: 2rem; }
+  }
+
+  /* ================================
+     LLM SECTION (reuses os-grid)
+  ================================ */
+  .os-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+    max-width: 800px;
+  }
+
+  .os-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+
+  .os-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .os-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+  }
+
+  .os-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .llm-link {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+    margin-top: 1rem;
+  }
+  .llm-link:hover { opacity: 0.7; }
+
+  /* ================================
+     AGENTIC
+  ================================ */
+  .chatbot-agent-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    max-width: 900px;
+  }
+
+  .shift-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+  }
+
+  .shift-box .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .shift-box.old .label { color: var(--red); }
+  .shift-box.new .label { color: var(--green); }
+
+  .shift-box .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .shift-box .desc {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .agent-traits {
+    margin-top: 2.5rem;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .agent-trait {
+    font-size: 1rem;
+    color: var(--muted);
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 400;
+  }
+
+  .agent-trait::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  /* ================================
+     FINAL
+  ================================ */
+  #final {
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .close-line {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    line-height: 1;
+  }
+
+  .close-line em { color: var(--accent); font-style: italic; }
+
+  /* ================================
+     CANVAS
+  ================================ */
+  .bg-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.15;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ================================
+     S3 LLM FLOW
+  ================================ */
+  .llm-flow {
+    display: grid;
+    grid-template-columns: 1fr 4.5rem 1fr 4.5rem 1fr;
+    align-items: stretch;
+    margin-top: 2rem;
+    max-width: 1020px;
+  }
+
+  .llm-pane {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .llm-pane-center {
+    border-color: rgba(232,255,71,0.3);
+    background: rgba(232,255,71,0.03);
+  }
+
+  .llm-pane-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.4rem;
+  }
+
+  .llm-pane-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .llm-pane-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .llm-pane-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Token chips */
+  .token-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tchip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  /* Probability display */
+  .prob-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .prob-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .prob-token {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    width: 3.5rem;
+    flex-shrink: 0;
+    color: var(--muted);
+    transition: color 0.4s;
+  }
+
+  .prob-row.winner .prob-token { color: var(--accent); }
+
+  .prob-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .prob-bar-fill {
+    height: 100%;
+    background: var(--muted);
+    width: 0%;
+    transition: width 0.55s ease;
+  }
+
+  .prob-row.winner .prob-bar-fill { background: var(--accent); }
+
+  .prob-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    width: 2.25rem;
+    text-align: right;
+    flex-shrink: 0;
+    transition: color 0.4s;
+  }
+
+  .prob-row.winner .prob-pct { color: var(--accent); }
+
+  /* LLM output text */
+  .llm-output-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.84rem;
+    line-height: 1.9;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    min-height: 5rem;
+  }
+
+  .out-accepted { color: var(--text); }
+
+  .out-new {
+    color: var(--accent);
+    background: rgba(232,255,71,0.08);
+    padding: 0.1rem 0.25rem;
+    border: 1px solid rgba(232,255,71,0.25);
+  }
+
+  .out-cursor {
+    color: var(--accent);
+    animation: cursorBlink 1s step-end infinite;
+    margin-left: 1px;
+  }
+
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  /* LLM arrow columns */
+  .llm-arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .llm-flow-arrow {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: var(--accent);
+    opacity: 0.45;
+    line-height: 1;
+  }
+
+  /* LLM bottom line */
+  .llm-bottom-line {
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .llm-bottom-line strong { color: var(--text); }
+
+  /* ================================
+     S7 PARADIGM COMPARE
+  ================================ */
+  .paradigm-compare {
+    display: grid;
+    grid-template-columns: 1fr 5rem 1fr;
+    align-items: stretch;
+    margin-top: 2rem;
+    max-width: 960px;
+  }
+
+  /* Panes */
+  .paradigm-pane {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pane-before { border-color: rgba(255,255,255,0.07); }
+  .pane-after  { border-color: rgba(232,255,71,0.2); background: rgba(232,255,71,0.025); }
+
+  .pane-era {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.35rem;
+  }
+  .pane-era-now { color: var(--green); }
+
+  .pane-model-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+  .pane-name-bright { color: var(--text); }
+
+  .pane-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+  .pane-caption-accent { color: var(--accent); opacity: 0.75; }
+
+  /* Chatbot loop */
+  .chatbot-loop {
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+  }
+  .chatbot-loop::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: linear-gradient(transparent, var(--surface));
+    pointer-events: none;
+  }
+
+  .cl-node {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(255,255,255,0.07);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .cl-ai { margin-left: 1.75rem; border-color: rgba(255,255,255,0.04); }
+  .cl-faded { opacity: 0.65; }
+  .cl-very-faded { opacity: 0.38; }
+
+  .cl-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    opacity: 0.4;
+  }
+
+  .cl-vline {
+    width: 1px; height: 0.65rem;
+    background: var(--border);
+    margin-left: 1.1rem;
+  }
+
+  .cl-loopback {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+  }
+  .cl-loop-line { flex: 1; height: 1px; background: var(--border); opacity: 0.35; }
+  .cl-loop-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--red);
+    opacity: 0.55;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* Divider */
+  .paradigm-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .pvs-line { width: 1px; flex: 1; background: linear-gradient(var(--border), transparent); }
+  .pvs-line:last-child { background: linear-gradient(transparent, var(--border)); }
+  .pvs-arrow {
+    font-family: 'DM Serif Display', serif;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--accent);
+    animation: shiftArrow 1.8s ease-in-out infinite;
+    letter-spacing: -0.05em;
+  }
+  @keyframes shiftArrow {
+    0%, 100% { opacity: 0.35; transform: translateX(-3px); }
+    50%       { opacity: 1;    transform: translateX(3px); }
+  }
+
+  /* Agent pipeline */
+  .agent-pipeline {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ap-step {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border);
+    opacity: 0.25;
+    transition: opacity 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+  }
+  .ap-step.active {
+    opacity: 1;
+    border-color: rgba(232,255,71,0.45);
+    background: rgba(232,255,71,0.05);
+  }
+  .ap-final.active {
+    border-color: rgba(52,211,153,0.45);
+    background: rgba(52,211,153,0.05);
+  }
+
+  .ap-connector {
+    width: 1px; height: 0.5rem;
+    background: var(--border);
+    margin-left: 1.6rem;
+    transition: background 0.35s;
+  }
+  .ap-step.active + .ap-connector { background: rgba(232,255,71,0.3); }
+
+  .ap-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    width: 1.25rem;
+    flex-shrink: 0;
+    transition: color 0.35s;
+  }
+  .ap-step.active .ap-num { color: var(--accent); }
+  .ap-final.active .ap-num { color: var(--green); }
+  .ap-check { font-size: 0.85rem; }
+
+  .ap-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.3;
+    transition: color 0.35s;
+  }
+  .ap-step.active .ap-label { color: var(--text); }
+
+  /* ================================
+     SECTION-SPECIFIC DENSITY OVERRIDES
+  ================================ */
+  #s4 { padding-top: 2rem; padding-bottom: 2rem; }
+  #s4 .platform-grid { gap: 2rem; margin-top: 1rem; }
+  #s4 .platform-card { padding: 1.1rem 1.4rem 1rem; }
+  #s4 .platform-name { font-size: 1.45rem; margin-bottom: 1rem; }
+  #s4 .sw-cols { gap: 0.5rem; }
+  #s4 .sw-col h4 { font-size: 0.72rem; margin-bottom: 0.3rem; }
+  #s4 .sw-col ul li { font-size: 0.86rem; padding: 0.18rem 0 0.18rem 1em; line-height: 1.4; border-bottom: none; }
+  #s4 h2 { margin-bottom: 0.5rem; font-size: clamp(2.5rem, 5vw, 4rem); }
+  #s4 .subtitle { font-size: 0.9rem; }
+
+  #s5, #s6 { padding-top: 2.5rem; padding-bottom: 2rem; }
+  #s5 h2, #s6 h2 { margin-bottom: 0.5rem; font-size: clamp(2.5rem, 5vw, 4rem); }
+
+  /* Remove tag boxes and descriptions from sections 4–6 */
+  #s4 .platform-tags,
+  #s5 .tool-tags,
+  #s6 .tool-tags,
+  #s5 .tool-desc,
+  #s6 .tool-desc,
+  .detail-tags { display: none; }
+
+  /* s5/s6 typography aligned to s4 */
+  #s5 .tool-grid, #s6 .tool-grid { gap: 2rem; margin-top: 1rem; }
+  #s5 .tool-card, #s6 .tool-card { padding: 1.1rem 1.4rem 1rem; }
+  #s5 .tool-maker, #s6 .tool-maker { font-size: 0.65rem; margin-bottom: 0.35rem; }
+  #s5 .tool-name, #s6 .tool-name { font-size: 1.45rem; margin-bottom: 1rem; }
+  #s5 .tool-sw, #s6 .tool-sw { gap: 0.35rem; }
+  #s5 .tool-sw-col h5, #s6 .tool-sw-col h5 { font-size: 0.72rem; margin-bottom: 0.3rem; }
+  #s5 .tool-sw-col ul li, #s6 .tool-sw-col ul li { font-size: 0.86rem; padding: 0.18rem 0 0.18rem 1em; line-height: 1.4; }
+  #s5 .subtitle, #s6 .subtitle { font-size: 0.9rem; }
+
+  .best-at {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 400;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.35rem 0;
+    margin-bottom: 0.8rem;
+  }
+
+  #s4 .platform-name { margin-bottom: 0.4rem; }
+  #s5 .tool-name, #s6 .tool-name { margin-bottom: 0.4rem; }
+
+  /* ================================
+     RESPONSIVE
+  ================================ */
+  @media (max-width: 768px) {
+    section { padding: 3rem 2rem; }
+    .platform-grid,
+    .os-grid,
+    .chatbot-agent-row,
+    .agentic-examples,
+    .tool-grid { grid-template-columns: 1fr; }
+    .nav-dots   { display: none; }
+    .scroll-hint { left: 2rem; }
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
+</head>
+<body>
+
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- ================================ HERO ================================ -->
+<section id="s0">
+  <canvas class="bg-canvas" id="canvas-s0"></canvas>
+  <div class="hero-bg"></div>
+  <div class="big-label">The State of AI — 2026</div>
+  <h1>"To create<br>something new,<br><span class="accent-text">You must<br>have doubt.</span>"</h1>
+  <p class="subtitle">Let's talk about what's new.</p>
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ================================ TIMELINE ================================ -->
+<section id="s1">
+  <canvas class="bg-canvas" id="canvas-s1"></canvas>
+  <div class="s1-header">
+    <div class="section-number">01 — The Pace of Change</div>
+    <h2>From Curiosity<br>to <span class="accent-text">Essential</span></h2>
+  </div>
+
+  <div class="scatter-timeline">
+    <div class="scatter-line"></div>
+
+    <div class="scatter-event above" style="left:5%">
+      <div class="scatter-year">Nov<br>2022</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">ChatGPT launches. 1M users in 5 days.</div>
+    </div>
+
+    <div class="scatter-event below" style="left:18%">
+      <div class="scatter-year">Mar<br>2023</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">GPT-4. Multimodal AI arrives.</div>
+    </div>
+
+    <div class="scatter-event above" style="left:30%">
+      <div class="scatter-year">Mid<br>2023</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">Midjourney v5. AI images go mainstream.</div>
+    </div>
+
+    <div class="scatter-event below" style="left:45%">
+      <div class="scatter-year">Late<br>2023</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">Runway Gen-2. AI video becomes real.</div>
+    </div>
+
+    <div class="scatter-event above" style="left:58%">
+      <div class="scatter-year">2024</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">Adobe Firefly integrated across Creative Cloud.</div>
+    </div>
+
+    <div class="scatter-event below" style="left:74%">
+      <div class="scatter-year">2025</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">AI video reaches near-broadcast quality.</div>
+    </div>
+
+    <div class="scatter-event above" style="left:89%">
+      <div class="scatter-year">2026</div>
+      <div class="scatter-connector"></div>
+      <div class="scatter-dot"></div>
+      <div class="scatter-title">AI agents enter the workflow. The tools start doing the work.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ LANDSCAPE TABLE ================================ -->
+<section id="s2">
+  <canvas class="bg-canvas" id="canvas-s2"></canvas>
+  <div class="section-number">02 — The Landscape</div>
+  <h2>Company <span class="accent-text">→</span> Product <span class="accent-text">→</span> Model</h2>
+  <p class="subtitle">It can be confusing. These are the major players.</p>
+
+  <table class="landscape-table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Product</th>
+        <th>Models</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>OpenAI</td>
+        <td>ChatGPT</td>
+        <td>
+          <div class="model-tags">
+            <span class="model-tag openai">GPT-5.3 Instant</span>
+            <span class="model-tag openai">GPT-5.4 Thinking</span>
+            <span class="model-tag openai">GPT-5.4 Pro</span>
+            <span class="model-tag openai">GPT Image 2</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Google</td>
+        <td>Gemini</td>
+        <td>
+          <div class="model-tags">
+            <span class="model-tag google">Gemini 3 Flash</span>
+            <span class="model-tag google">Gemini 3.1 Pro</span>
+            <span class="model-tag google">Nano Banana Pro</span>
+            <span class="model-tag google">Veo 3.1</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Adobe</td>
+        <td>Firefly</td>
+        <td>
+          <div class="model-tags">
+            <span class="model-tag adobe">Firefly Image 5</span>
+            <span class="model-tag adobe">Firefly Video</span>
+            <span class="model-tag adobe">Firefly Audio</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>xAI</td>
+        <td>Grok</td>
+        <td>
+          <div class="model-tags">
+            <span class="model-tag xai">Grok 4.1</span>
+            <span class="model-tag xai">Grok 4.20 Beta</span>
+            <span class="model-tag xai">Aurora</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Anthropic</td>
+        <td>Claude</td>
+        <td>
+          <div class="model-tags">
+            <span class="model-tag anthropic">Sonnet 4.6</span>
+            <span class="model-tag anthropic">Opus 4.7</span>
+            <span class="model-tag anthropic">Haiku 4.5</span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================================ HOW LLMs WORK ================================ -->
+<section id="s3">
+  <canvas class="bg-canvas" id="canvas-s3"></canvas>
+  <div class="section-number">03 — How It Works</div>
+  <h2>Large Language Model.<br><span class="accent-text">Demystified.</span></h2>
+
+  <div class="llm-flow">
+
+    <!-- PANE 1: TOKENIZE -->
+    <div class="llm-pane">
+      <div class="llm-pane-num">01</div>
+      <div class="llm-pane-title">Prompt sent</div>
+      <div class="llm-pane-body">
+        <div class="token-chips">
+          <span class="tchip">why</span><span class="tchip">do</span><span class="tchip">cats</span><span class="tchip">sleep</span><span class="tchip">so</span><span class="tchip">much?</span>
+        </div>
+        <div class="llm-pane-note">Text split into tokens — small chunks of words. The model has never "seen" your question before.</div>
+      </div>
+    </div>
+
+    <div class="llm-arrow-col"><div class="llm-flow-arrow">→</div></div>
+
+    <!-- PANE 2: PREDICT (animated) -->
+    <div class="llm-pane llm-pane-center">
+      <div class="llm-pane-num">02</div>
+      <div class="llm-pane-title">Next token predicted</div>
+      <div class="llm-pane-body">
+        <div class="prob-rows" id="probRows"></div>
+        <div class="llm-pane-note">Billions of parameters trained on trillions of words calculate the most probable next token.</div>
+      </div>
+    </div>
+
+    <div class="llm-arrow-col"><div class="llm-flow-arrow">→</div></div>
+
+    <!-- PANE 3: OUTPUT -->
+    <div class="llm-pane">
+      <div class="llm-pane-num">03</div>
+      <div class="llm-pane-title">Response builds up</div>
+      <div class="llm-pane-body">
+        <div class="llm-output-text" id="llmOutput"></div>
+        <div class="llm-pane-note">Not retrieved — generated token by token. Each word shapes the probability of the next.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="llm-bottom-line">It doesn't think. It doesn't know. <strong>It predicts — very well.</strong></div>
+  <a href="./how-llms-work.html" class="llm-link">Deep dive: How LLMs Work →</a>
+</section>
+
+<!-- ================================ PLATFORMS ================================ -->
+<section id="s4">
+  <canvas class="bg-canvas" id="canvas-s4"></canvas>
+  <div class="section-number">04 — The Platforms</div>
+  <h2>AI <span class="accent-text">Assistants</span></h2>
+  <p class="subtitle">All-in-one platforms for conversation, writing, and research.</p>
+
+  <div class="platform-grid">
+
+    <div class="platform-card openai" data-clickable="true" data-color="#10a37f"
+      data-img="AI Screengrabs/ChatGPT.png"
+      data-desc="The most-used AI platform. Excels at natural conversation, multimodal tasks, and a huge ecosystem of integrations.">
+      <div class="platform-parent">OpenAI</div>
+      <div class="platform-name">ChatGPT</div>
+      <div class="best-at">Best at: natural conversation</div>
+      <div class="sw-cols">
+        <div class="sw-col strengths">
+          <h4>Strengths</h4>
+          <ul>
+            <li>Best at natural interaction</li>
+            <li>Massive integrations and plugins</li>
+          </ul>
+        </div>
+        <div class="sw-col weaknesses">
+          <h4>Weaknesses</h4>
+          <ul>
+            <li>Can be overly agreeable</li>
+            <li>Restrictive context window, even for paid users</li>
+          </ul>
+        </div>
+      </div>
+      <div class="platform-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="platform-card google" data-clickable="true" data-color="#7eb8f7"
+      data-img="AI Screengrabs/Gemini.png"
+      data-desc="Google's AI, deeply integrated with Workspace. Massive context window, strong multimodal: text, image, and video.">
+      <div class="platform-parent">Google</div>
+      <div class="platform-name">Gemini</div>
+      <div class="best-at">Best at: general multimodal tool</div>
+      <div class="sw-cols">
+        <div class="sw-col strengths">
+          <h4>Strengths</h4>
+          <ul>
+            <li>Native Google Ecosystem integration</li>
+            <li>Best multimodal model: text, image, video</li>
+          </ul>
+        </div>
+        <div class="sw-col weaknesses">
+          <h4>Weaknesses</h4>
+          <ul>
+            <li>Weak at complex reasoning &amp; coding</li>
+            <li>Slow to ship new capabilities</li>
+          </ul>
+        </div>
+      </div>
+      <div class="platform-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="platform-card xai" data-clickable="true" data-color="#c084fc"
+      data-img="AI Screengrabs/Grok.png"
+      data-desc="xAI's AI assistant with real-time access to X and fewer content restrictions than any rival platform.">
+      <div class="platform-parent">xAI</div>
+      <div class="platform-name">Grok</div>
+      <div class="best-at">Best at: real-time trends</div>
+      <div class="sw-cols">
+        <div class="sw-col strengths">
+          <h4>Strengths</h4>
+          <ul>
+            <li>Less restrictive than other platforms</li>
+            <li>Great at math &amp; coding</li>
+          </ul>
+        </div>
+        <div class="sw-col weaknesses">
+          <h4>Weaknesses</h4>
+          <ul>
+            <li>Ownership &amp; alignment concerns</li>
+            <li>Smaller ecosystem than rivals</li>
+          </ul>
+        </div>
+      </div>
+      <div class="platform-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="platform-card anthropic" data-clickable="true" data-color="#34d399"
+      data-img="AI Screengrabs/Claude.png"
+      data-desc="Anthropic's AI, known for honest nuanced reasoning and handling large documents — scripts, decks, and briefs — without hallucinating.">
+      <div class="platform-parent">Anthropic</div>
+      <div class="platform-name">Claude</div>
+      <div class="best-at">Best at: reasoning and technical execution</div>
+      <div class="sw-cols">
+        <div class="sw-col strengths">
+          <h4>Strengths</h4>
+          <ul>
+            <li>Best-in-class writing and reasoning</li>
+            <li>Honest — pushes back rather than just agrees</li>
+          </ul>
+        </div>
+        <div class="sw-col weaknesses">
+          <h4>Weaknesses</h4>
+          <ul>
+            <li>No native image generation</li>
+            <li>Targeted to devs (eg: Claude Code)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="platform-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================ IMAGE GENERATION ================================ -->
+<section id="s5">
+  <canvas class="bg-canvas" id="canvas-s5"></canvas>
+  <div class="section-number">05 — Image Tools</div>
+  <h2>Image <span class="accent-text">Generation</span></h2>
+  <p class="subtitle">Each tool has a distinct use case — know which one to reach for.</p>
+
+  <div class="tool-grid">
+
+    <div class="tool-card adobe" data-clickable="true" data-color="#ff6b35" data-img="AI Screengrabs/FireflyImage.png">
+      <div class="tool-maker">Adobe</div>
+      <div class="tool-name">Firefly</div>
+      <div class="best-at">Best at: commercially safe images</div>
+      <div class="tool-desc">Adobe's natively trained model. Integrates FLUX.2 for expanded capabilities.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Safe for all client use</li>
+            <li>Native in Creative Cloud</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Quality lags behind rivals</li>
+            <li>Weaker prompt adherence</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag cc">creative cloud</span>
+      </div>
+    </div>
+
+    <div class="tool-card midjourney" data-clickable="true" data-color="#7c6fff" data-img="AI Screengrabs/Midjourney.png">
+      <div class="tool-maker">Midjourney</div>
+      <div class="tool-name">Midjourney</div>
+      <div class="best-at">Best at: artistic creative quality</div>
+      <div class="tool-desc">V7 stable; V8 in alpha testing.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Great creative "taste"</li>
+            <li>Rapid variation workflow</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Subscription only</li>
+            <li>No API access</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+      </div>
+    </div>
+
+    <div class="tool-card openai-t" data-clickable="true" data-color="#10a37f" data-img="AI Screengrabs/GPT_Image.png">
+      <div class="tool-maker">OpenAI</div>
+      <div class="tool-name">GPT Image</div>
+      <div class="best-at">Best at: quick concept visuals</div>
+      <div class="tool-desc">Replaced DALL·E. Built directly into ChatGPT.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Follows instructions well</li>
+            <li>Great text handling</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Inconsistent quality</li>
+            <li>Limited style control</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="tool-card google-t" data-clickable="true" data-color="#7eb8f7" data-img="AI Screengrabs/NanoBananaPro.png">
+      <div class="tool-maker">Google</div>
+      <div class="tool-name">Nano Banana Pro</div>
+      <div class="best-at">Best at: text rendering and realism</div>
+      <div class="tool-desc">Integrated into Gemini (Flash, Pro, Ultra).</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Extremely realistic quality</li>
+            <li>Natural language editing</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Safety filters too cautious</li>
+            <li>Less creative than Midjourney</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="tool-card bfl" data-clickable="true" data-color="#94a3b8" data-img="AI Screengrabs/Flux.png">
+      <div class="tool-maker">Black Forest Labs</div>
+      <div class="tool-name">FLUX.2</div>
+      <div class="best-at">Best at: camera directions</div>
+      <div class="tool-desc">Powers Runway, Firefly, and dozens of other platforms.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Best open model available</li>
+            <li>Fastest open image generation</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>No official web product</li>
+            <li>Requires third-party access</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag open">open source</span>
+        <span class="tool-tag web">pro via platforms</span>
+      </div>
+    </div>
+
+    <div class="tool-card stability" data-clickable="true" data-color="#d946ef" data-img="AI Screengrabs/StableDiffusion.png">
+      <div class="tool-maker">Stability AI</div>
+      <div class="tool-name">Stable Diffusion</div>
+      <div class="best-at">Best at: local image generation</div>
+      <div class="tool-desc">The original open model. SD 3.5 runs entirely local.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Fully local and private</li>
+            <li>Zero cost to run</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Technical setup required</li>
+            <li>Requires fine-tuning</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag open">open source</span>
+        <span class="tool-tag free">free</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================ VIDEO GENERATION ================================ -->
+<section id="s6">
+  <canvas class="bg-canvas" id="canvas-s6"></canvas>
+  <div class="section-number">06 — Video Tools</div>
+  <h2>Video <span class="accent-text">Generation</span></h2>
+  <p class="subtitle">The fastest-evolving category in AI — near broadcast quality and still accelerating.</p>
+
+  <div class="tool-grid">
+
+    <div class="tool-card runway-t" data-clickable="true" data-color="#2dd4bf" data-img="AI Screengrabs/Runway.png">
+      <div class="tool-maker">Runway</div>
+      <div class="tool-name">Runway Gen-4.5</div>
+      <div class="best-at">Best at: cinematic video output</div>
+      <div class="tool-desc">Top-ranked on major benchmarks. Also hosts FLUX.2 for images.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Top benchmark, across the board</li>
+            <li>Best for cinematic output</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Expensive for heavy use</li>
+            <li>Short clip duration</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+      </div>
+    </div>
+
+    <div class="tool-card adobe" data-clickable="true" data-color="#ff6b35" data-img="AI Screengrabs/FireflyVideo.png">
+      <div class="tool-maker">Adobe</div>
+      <div class="tool-name">Firefly Video</div>
+      <div class="best-at">Best at: safe commercial video</div>
+      <div class="tool-desc">Integrating directly into Premiere and After Effects.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Commercially safe for clients</li>
+            <li>Good for b-roll</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Less cinematic than competition</li>
+            <li>Short clip duration</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag cc">creative cloud</span>
+      </div>
+    </div>
+
+    <div class="tool-card google-t" data-clickable="true" data-color="#7eb8f7">
+      <div class="tool-maker">Google</div>
+      <div class="tool-name">Veo 3.1</div>
+      <div class="best-at">Best at: fidelity & complex prompts</div>
+      <div class="tool-desc">Dialogue and audio generation built in. Available through Gemini.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Native dialogue and audio</li>
+            <li>Photorealistic output quality</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Less stylistic control</li>
+            <li>Slower generation time</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="tool-card kuaishou" data-clickable="true" data-color="#fb7185" data-img="AI Screengrabs/Kling.png">
+      <div class="tool-maker">Kuaishou</div>
+      <div class="tool-name">Kling 3.0</div>
+      <div class="best-at">Best at: physics-accurate motion</div>
+      <div class="tool-desc">4K HDR with stable faces and first/last frame control.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Motion realism and physics</li>
+            <li>4K HDR output</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Privacy policy concerns</li>
+            <li>Less polished than others</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="tool-card bytedance" data-clickable="true" data-color="#60a5fa" data-img="AI Screengrabs/Seedance.png">
+      <div class="tool-maker">ByteDance</div>
+      <div class="tool-name">Seedance 2.0</div>
+      <div class="best-at">Best at: multi-shot storytelling</div>
+      <div class="tool-desc">Audio-video up to 1080p, 15 sec. Benchmarks above Veo 3 and Runway.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Strong character consistency</li>
+            <li>Top tier realism</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Data privacy concerns</li>
+            <li>Less accessible</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag web">web app</span>
+        <span class="tool-tag free">free tier</span>
+      </div>
+    </div>
+
+    <div class="tool-card alibaba" data-clickable="true" data-color="#f59e0b" data-img="AI Screengrabs/Wan.png">
+      <div class="tool-maker">Alibaba</div>
+      <div class="tool-name">Wan 2.6</div>
+      <div class="best-at">Best at: local video generation</div>
+      <div class="tool-desc">Open-weight. Run locally or via platforms.</div>
+      <div class="tool-sw">
+        <div class="tool-sw-col strengths">
+          <h5>Strengths</h5>
+          <ul>
+            <li>Fully open source</li>
+            <li>Run completely local</li>
+          </ul>
+        </div>
+        <div class="tool-sw-col weaknesses">
+          <h5>Weaknesses</h5>
+          <ul>
+            <li>Technical setup required</li>
+            <li>Slower than cloud tools</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tool-tags">
+        <span class="tool-tag open">open source</span>
+        <span class="tool-tag free">free</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================ AGENTIC AI ================================ -->
+<section id="s7">
+  <canvas class="bg-canvas" id="canvas-s7"></canvas>
+  <div class="section-number">07 — The Shift</div>
+  <h2>From Chatbot<br>to <span class="accent-text">Agent</span></h2>
+
+  <div class="paradigm-compare">
+
+    <!-- CHATBOT (before) -->
+    <div class="paradigm-pane pane-before">
+      <div class="pane-model-name">Chatbot</div>
+      <div class="chatbot-loop">
+        <div class="cl-node cl-human"><span class="cl-dot cl-dot-dim"></span>You type a prompt</div>
+        <div class="cl-vline"></div>
+        <div class="cl-node cl-ai"><span class="cl-dot cl-dot-dim"></span>AI responds</div>
+        <div class="cl-loopback"><div class="cl-loop-line"></div><div class="cl-loop-label">↺ start over</div><div class="cl-loop-line"></div></div>
+        <div class="cl-node cl-human cl-faded"><span class="cl-dot cl-dot-dim"></span>You type again</div>
+        <div class="cl-vline"></div>
+        <div class="cl-node cl-ai cl-faded"><span class="cl-dot cl-dot-dim"></span>AI responds again</div>
+        <div class="cl-loopback cl-faded"><div class="cl-loop-line"></div><div class="cl-loop-label">↺ start over</div><div class="cl-loop-line"></div></div>
+        <div class="cl-node cl-human cl-very-faded"><span class="cl-dot cl-dot-dim"></span>You type again…</div>
+        <div class="cl-fadeout"></div>
+      </div>
+      <div class="pane-caption">You drive every step.</div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="paradigm-vs">
+      <div class="pvs-line"></div>
+      <div class="pvs-arrow">→</div>
+      <div class="pvs-line"></div>
+    </div>
+
+    <!-- AGENT (now) -->
+    <div class="paradigm-pane pane-after">
+      <div class="pane-model-name pane-name-bright">Agent</div>
+      <div class="agent-pipeline" id="agentPipeline">
+        <div class="ap-step" data-i="0"><div class="ap-num">01</div><div class="ap-label">You assign a goal</div></div>
+        <div class="ap-connector"></div>
+        <div class="ap-step" data-i="1"><div class="ap-num">02</div><div class="ap-label">Agent plans the approach</div></div>
+        <div class="ap-connector"></div>
+        <div class="ap-step" data-i="2"><div class="ap-num">03</div><div class="ap-label">Reads your actual files</div></div>
+        <div class="ap-connector"></div>
+        <div class="ap-step" data-i="3"><div class="ap-num">04</div><div class="ap-label">Searches, writes, creates</div></div>
+        <div class="ap-connector"></div>
+        <div class="ap-step" data-i="4"><div class="ap-num">05</div><div class="ap-label">Checks its own work</div></div>
+        <div class="ap-connector"></div>
+        <div class="ap-step ap-final" data-i="5"><div class="ap-num ap-check">✓</div><div class="ap-label">Done — without being asked</div></div>
+      </div>
+      <div class="pane-caption pane-caption-accent">Assign once. It works until done.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================ FINAL ================================ -->
+<section id="final">
+  <canvas class="bg-canvas" id="canvas-final"></canvas>
+  <div class="close-line">Use it. Play. <em>Create.</em></div>
+</section>
+
+<!-- ================================ DETAIL PANEL ================================ -->
+<div id="detailPanel" class="detail-panel">
+  <button class="detail-back" id="detailBack">← Back</button>
+  <div class="detail-body">
+    <div class="detail-left">
+      <div class="detail-maker" id="dMaker"></div>
+      <div class="detail-name" id="dName"></div>
+      <div class="detail-desc" id="dDesc"></div>
+      <div class="detail-sw">
+        <div class="detail-sw-col strengths">
+          <h4>Strengths</h4>
+          <ul id="dStrengths"></ul>
+        </div>
+        <div class="detail-sw-col weaknesses">
+          <h4>Weaknesses</h4>
+          <ul id="dWeaknesses"></ul>
+        </div>
+      </div>
+      <div class="detail-tags" id="dTags"></div>
+    </div>
+    <div class="detail-right">
+      <div class="detail-image-placeholder">
+        <div class="dip-icon">⊞</div>
+        <div>Add screenshot here</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================
+// NAV DOTS
+// ================================
+const sectionIds    = ['s0','s1','s2','s3','s4','s5','s6','s7','final'];
+const sectionTitles = ['Hook','Timeline','Landscape','How LLMs Work','Platforms','Images','Video','Agentic','Close'];
+const navDots = document.getElementById('navDots');
+
+sectionIds.forEach((id, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot';
+  dot.title = sectionTitles[i];
+  dot.onclick = () => document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  navDots.appendChild(dot);
+});
+
+const allDots = document.querySelectorAll('.nav-dot');
+let currentSectionIndex = 0;
+
+function updateNav() {
+  sectionIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+      allDots.forEach(d => d.classList.remove('active'));
+      allDots[i].classList.add('active');
+      currentSectionIndex = i;
+    }
+  });
+}
+
+window.addEventListener('scroll', updateNav);
+updateNav();
+
+document.addEventListener('keydown', (e) => {
+  if (detailActive) {
+    if (e.key === 'Escape') closeDetail();
+    return;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const next = Math.min(currentSectionIndex + 1, sectionIds.length - 1);
+    document.getElementById(sectionIds[next]).scrollIntoView({behavior: 'smooth'});
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    const prev = Math.max(currentSectionIndex - 1, 0);
+    document.getElementById(sectionIds[prev]).scrollIntoView({behavior: 'smooth'});
+  }
+});
+
+// ================================
+// DETAIL PANEL
+// ================================
+const detailPanel = document.getElementById('detailPanel');
+const detailBack  = document.getElementById('detailBack');
+let detailActive  = false;
+
+function openDetail(card) {
+  const maker = (card.querySelector('.tool-maker, .platform-parent') || {}).textContent || '';
+  const name  = (card.querySelector('.tool-name,  .platform-name')  || {}).textContent || '';
+  const desc  = card.dataset.desc || (card.querySelector('.tool-desc') || {}).textContent || '';
+  const color = card.dataset.color || 'var(--accent)';
+
+  const sEls = card.querySelectorAll('.tool-sw-col.strengths li, .sw-col.strengths li');
+  const wEls = card.querySelectorAll('.tool-sw-col.weaknesses li, .sw-col.weaknesses li');
+  const tEls = card.querySelectorAll('.tool-tags .tool-tag, .platform-tags .tool-tag');
+
+  document.getElementById('dMaker').textContent      = maker;
+  document.getElementById('dMaker').style.color      = color;
+  document.getElementById('dName').textContent       = name;
+  document.getElementById('dDesc').textContent       = desc;
+  document.getElementById('dStrengths').innerHTML    = [...sEls].map(li => `<li>${li.textContent}</li>`).join('');
+  document.getElementById('dWeaknesses').innerHTML   = [...wEls].map(li => `<li>${li.textContent}</li>`).join('');
+  document.getElementById('dTags').innerHTML         = [...tEls].map(t  => t.outerHTML).join('');
+
+  const imgSrc = card.dataset.img || '';
+  const dipEl = detailPanel.querySelector('.detail-image-placeholder');
+  if (imgSrc) {
+    dipEl.innerHTML = `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:contain;object-position:top center;display:block;border-radius:0;">`;
+  } else {
+    dipEl.innerHTML = `<div class="dip-icon">⊞</div><div>Add screenshot here</div>`;
+  }
+
+  detailPanel.style.setProperty('--detail-color', color);
+  detailPanel.classList.add('active');
+  detailActive = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  detailPanel.classList.remove('active');
+  detailActive = false;
+  document.body.style.overflow = '';
+}
+
+detailBack.addEventListener('click', closeDetail);
+
+document.addEventListener('click', (e) => {
+  const card = e.target.closest('[data-clickable]');
+  if (card) openDetail(card);
+});
+
+// ================================
+// SCATTER TIMELINE CYCLER
+// ================================
+(function() {
+  const events = Array.from(document.querySelectorAll('.scatter-event'));
+  if (!events.length) return;
+  let current = 0;
+
+  function activate(i) {
+    events.forEach(e => e.classList.remove('active'));
+    events[i].classList.add('active');
+  }
+
+  activate(current);
+  setInterval(() => {
+    current = (current + 1) % events.length;
+    activate(current);
+  }, 2800);
+})();
+
+// ================================
+// CANVAS PARTICLE BACKGROUNDS
+// ================================
+function initCanvas(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const section = canvas.parentElement;
+  let W, H, rafId = null, running = false;
+
+  function resize() {
+    W = canvas.width  = section.offsetWidth;
+    H = canvas.height = section.offsetHeight;
+  }
+  resize();
+  new ResizeObserver(resize).observe(section);
+
+  const PALETTE = [
+    'rgba(232,255,71,ALPHA)',
+    'rgba(232,255,71,ALPHA)',
+    'rgba(255,107,53,ALPHA)',
+    'rgba(255,220,100,ALPHA)',
+  ];
+  const COUNT = 60;
+  const particles = Array.from({length: COUNT}, () => ({
+    x: Math.random() * (W || 1000),
+    y: Math.random() * (H || 800),
+    r: 1 + Math.random() * 2,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -0.2 - Math.random() * 0.4,
+    alpha: 0.3 + Math.random() * 0.7,
+    color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+  }));
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color.replace('ALPHA', p.alpha);
+      ctx.fill();
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+    });
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    draw();
+  }
+
+  function stop() {
+    running = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => { entry.isIntersecting ? start() : stop(); });
+  }, { threshold: 0.1 });
+  observer.observe(section);
+}
+
+['s0','s1','s2','s3','s4','s5','s6','s7','final'].forEach(id => {
+  initCanvas('canvas-' + id);
+});
+
+// ================================
+// LLM PREDICTION ANIMATION
+// ================================
+(function() {
+  const STEPS = [
+    { candidates: [{ w: 'sleep',   p: 71 }, { w: 'rest',    p: 15 }, { w: 'nap',     p:  9 }, { w: 'doze',    p:  5 }] },
+    { candidates: [{ w: 'to',      p: 68 }, { w: 'because', p: 18 }, { w: 'for',     p: 10 }, { w: 'a',       p:  4 }] },
+    { candidates: [{ w: 'conserve',p: 62 }, { w: 'rest',    p: 22 }, { w: 'save',    p: 12 }, { w: 'store',   p:  4 }] },
+    { candidates: [{ w: 'energy',  p: 79 }, { w: 'body',    p: 12 }, { w: 'heat',    p:  6 }, { w: 'resources',p: 3 }] },
+    { candidates: [{ w: 'for',     p: 74 }, { w: 'and',     p: 16 }, { w: 'while',   p:  7 }, { w: 'by',      p:  3 }] },
+    { candidates: [{ w: 'hunting', p: 84 }, { w: 'survival',p:  8 }, { w: 'play',    p:  5 }, { w: 'rest',    p:  3 }] },
+  ];
+
+  const probRowsEl = document.getElementById('probRows');
+  const llmOutputEl = document.getElementById('llmOutput');
+  if (!probRowsEl || !llmOutputEl) return;
+
+  const BASE = ['Cats'];
+  const accepted = [];
+  let idx = 0;
+
+  function render() {
+    const step = STEPS[idx % STEPS.length];
+    const winner = step.candidates[0].w;
+
+    // Probability pane
+    probRowsEl.innerHTML = step.candidates.map((c, i) => `
+      <div class="prob-row${i === 0 ? ' winner' : ''}">
+        <span class="prob-token">${c.w}</span>
+        <div class="prob-bar-wrap"><div class="prob-bar-fill" style="width:0%"></div></div>
+        <span class="prob-pct">${c.p}%</span>
+      </div>`).join('');
+
+    requestAnimationFrame(() => {
+      step.candidates.forEach((c, i) => {
+        probRowsEl.querySelectorAll('.prob-bar-fill')[i].style.width = c.p + '%';
+      });
+    });
+
+    // Output pane — rolling window of accepted words + current prediction highlighted
+    llmOutputEl.innerHTML =
+      BASE.map(w => `<span class="out-accepted">${w} </span>`).join('') +
+      accepted.map(w => `<span class="out-accepted">${w} </span>`).join('') +
+      `<span class="out-new">${winner}</span><span class="out-cursor">▋</span>`;
+
+    // Accept winner for next cycle, keep rolling window short
+    accepted.push(winner);
+    if (accepted.length > 4) accepted.shift();
+    idx++;
+  }
+
+  render();
+  setInterval(render, 1900);
+})();
+
+// ================================
+// AGENT PIPELINE ANIMATION
+// ================================
+(function() {
+  const steps = Array.from(document.querySelectorAll('#agentPipeline .ap-step'));
+  if (!steps.length) return;
+  let idx = 0;
+
+  function tick() {
+    steps[idx].classList.add('active');
+    idx++;
+    if (idx < steps.length) {
+      setTimeout(tick, 700);
+    } else {
+      // All lit — pause, then reset and replay
+      setTimeout(() => {
+        steps.forEach(s => s.classList.remove('active'));
+        idx = 0;
+        setTimeout(tick, 600);
+      }, 2800);
+    }
+  }
+
+  setTimeout(tick, 800);
+})();
+</script>
+</body>
+</html>
